@@ -167,6 +167,7 @@ nil if the cursor was not on an element.")
 	(entity-elements '(entity))
 	(link-elements '(link))
 	(keyword-elements '(keyword))
+	(macro-elements '(macro))
 	(latex-elements '(latex-fragment latex-environment)))
 
     ;; HACK: is there a better way to do this?
@@ -182,6 +183,8 @@ nil if the cursor was not on an element.")
       (setq org-appear-elements (append org-appear-elements link-elements)))
     (when (and org-hidden-keywords org-appear-autokeywords)
       (setq org-appear-elements (append org-appear-elements keyword-elements)))
+    (when (and org-hide-macro-markers org-appear-automacros)
+      (setq org-appear-elements (append org-appear-elements macro-elements)))
     (when org-appear-inside-latex
       (setq org-appear-elements (append org-appear-elements latex-elements)))))
 
@@ -310,6 +313,8 @@ Return nil if element cannot be parsed."
 			  'link)
 			 ((eq elem-type 'keyword)
 			  'keyword)
+			 ((eq elem-type 'macro)
+			  'macro)
 			 ((memq elem-type '(latex-fragment latex-environment))
 			  'latex-fragment)
 			 (t nil)))
@@ -329,11 +334,13 @@ Return nil if element cannot be parsed."
 	       :visible-start ,(pcase elem-tag
 				 ('emph (1+ elem-start))
 				 ('script elem-content-start)
-				 ('link (or elem-content-start (+ elem-start 2))))
+				 ('link (or elem-content-start (+ elem-start 2)))
+				 ('macro (or elem-content-start (+ elem-start 3))))
 	       :visible-end ,(pcase elem-tag
 			       ('emph (1- elem-end-real))
 			       ('script elem-content-end)
-			       ('link (or elem-content-end (- elem-end-real 2))))))))
+			       ('link (or elem-content-end (- elem-end-real 2)))
+			       ('macro (or elem-content-end (- elem-end-real 3))))))))
 
 (defun org-appear--show-invisible (elem)
   "Silently remove invisible property from invisible parts of element ELEM."
