@@ -183,8 +183,7 @@ nil if the cursor was not on an element.")
       (setq org-appear-elements (append org-appear-elements link-elements)))
     (when (and org-hidden-keywords org-appear-autokeywords)
       (setq org-appear-elements (append org-appear-elements keyword-elements)))
-    (when (and org-hide-macro-markers org-appear-automacros)
-      (setq org-appear-elements (append org-appear-elements macro-elements)))
+    (setq org-appear-elements (append org-appear-elements macro-elements))
     (when org-appear-inside-latex
       (setq org-appear-elements (append org-appear-elements latex-elements)))))
 
